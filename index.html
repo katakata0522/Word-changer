@@ -454,26 +454,31 @@
   }
 
 
+
   function addDakutenOnly(str) {
     // 濁点をつけない文字: 空白、句読点・一部記号、ひらがな・カタカナ以外の文字、
-    // 小書き文字、ん、ヴ、ヵ、ヶ、既に濁点/半濁点が付いている可能性のある文字
+    // 小書き文字、ん、ヴ、ヵ、ヶ、既に濁点が付いている文字
     const NO_DAKUTEN_CHARS_REGEX = /[\s、。「」！？()（）ヶヵヴンん]/;
     const SMALL_KANA_REGEX = /[ぁぃぅぇぉゃゅょゎっァィゥェォャュョヮッ]/;
     const KANA_REGEX = /[\u3040-\u309F\u30A0-\u30FF]/; // Hiragana & Katakana range
+    const ALREADY_DAKUTEN_REGEX = /[がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴヷヺガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ]/;
 
-
-    return str.split('').map(ch => {
-      if (NO_DAKUTEN_CHARS_REGEX.test(ch) || 
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      const nextChar = str[i + 1];
+      if (NO_DAKUTEN_CHARS_REGEX.test(ch) ||
           SMALL_KANA_REGEX.test(ch) ||
           !KANA_REGEX.test(ch) ||
-          (ch.length > 1 && (ch.endsWith('゛') || ch.endsWith('゜'))) // Avoid double dakuten on already combined chars
-         ) {
-        return ch;
+          ALREADY_DAKUTEN_REGEX.test(ch) ||
+          nextChar === '゛' || nextChar === '゜') {
+        result += ch;
+        continue;
       }
-      return ch + '゛';
-    }).join('');
+      result += ch + '゛';
+    }
+    return result;
   }
-
   function emphasizedStatementConversion(str) {
     if (str === null || str === undefined) {
       return '';
