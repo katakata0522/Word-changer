@@ -1,4 +1,3 @@
-
 {
   "tabDefinitions": {
     "practical": [
@@ -8,7 +7,6 @@
       { "id": "toHalfAlphaNum", "label": "全角英数→半角" },
       { "id": "toFullAlphaNum", "label": "半角英数→全角" },
       { "id": "toHalfKata", "label": "全角カナ→半角" },
-      { "id": "toFullKata", "label": "半角カナ→全角" },
       { "id": "spaceRemoveAll", "label": "スペース全削除" }
     ],
     "fun": [
@@ -32,7 +30,6 @@
     "toHalfAlphaNum": "全角の英数字を入力",
     "toFullAlphaNum": "半角の英数字を入力",
     "toHalfKata": "全角のカタカナを入力",
-    "toFullKata": "半角のカタカナを入力",
     "spaceRemoveAll": "スペースを全て削除したい文章を入力",
     "arabic": "変換したい言葉を入力（アラビア語風に）",
     "korean": "変換したい言葉を入力（韓国語風に）",

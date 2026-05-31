@@ -138,11 +138,38 @@
       line-height: 1;
     }
     .input-clear-btn:hover { color: #777; }
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: -0.5em;
+      padding: 0 5px;
+    }
+    .clear-all-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      background: none;
+      border: none;
+      color: #9ca3af; /* 少し薄めのグレー */
+      padding: 0.2em 0.6em;
+      border-radius: 8px;
+      font-size: 0.85em;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .clear-all-btn:hover {
+      background-color: #f3f4f6; /* 薄いグレーの背景 */
+      color: #374151; /* 少し濃いめのグレー */
+    }
+    .clear-all-btn .clear-icon {
+      width: 1.1em;
+      height: 1.1em;
+    }
     .char-counter {
       font-size: 0.8em;
       color: #777;
       text-align: right;
-      padding-right: 5px;
     }
     .convert-btn {
       display: block;
@@ -245,8 +272,15 @@
 
     <div class="input-area">
       <textarea id="inputText" maxlength="2000" placeholder="ここに変換したい文章を入力"></textarea>
-      <button id="clearInputBtn" class="input-clear-btn" title="入力をクリア">×</button>
-      <div id="charCounter" class="char-counter">0 / 2000</div>
+      <div class="input-footer">
+                <button id="clearAllBtn" class="clear-all-btn" title="全消し">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="clear-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.578 0c-1.553 0-3.036.135-4.484.402" />
+          </svg>
+          <span>全消し</span>
+        </button>
+        <div id="charCounter" class="char-counter">0 / 2000</div>
+      </div>
     </div>
 
 
@@ -288,7 +322,7 @@
   const copyBtnText = copyBtn.querySelector('.text');
   const copyBtnIcon = copyBtn.querySelector('.icon');
   const convertBtn = document.getElementById('convertBtn');
-  const clearInputBtn = document.getElementById('clearInputBtn');
+  const clearAllBtn = document.getElementById('clearAllBtn');
   const charCounter = document.getElementById('charCounter');
   const mainCategoryTabs = document.querySelectorAll('.main-category-tab');
   const practicalPanel = document.getElementById('practicalPanel');
@@ -567,7 +601,7 @@
     }, 1500);
   }
 
-  clearInputBtn.addEventListener('click', () => {
+  clearAllBtn.addEventListener('click', () => { 
     inputText.value = '';
     updateCharCounter();
     inputText.focus();
