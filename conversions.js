@@ -11,6 +11,8 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createConversionsApi() {
   "use strict";
 
+  const SPACING_KANA_MARK = /^[゛゜]$/u;
+
   const KANA_MAP_HIRA_TO_HALF = {
     "あ": "ｱ", "い": "ｲ", "う": "ｳ", "え": "ｴ", "お": "ｵ",
     "か": "ｶ", "き": "ｷ", "く": "ｸ", "け": "ｹ", "こ": "ｺ",
@@ -106,7 +108,7 @@
 
     return segmentGraphemes(value)
       .map((character) => {
-        if (/^\s$/u.test(character)) {
+        if (/^\s+$/u.test(character)) {
           return character;
         }
         return symbolList[Math.floor(Math.random() * symbolList.length)];
@@ -115,7 +117,18 @@
   }
 
   function reverseString(value) {
-    return segmentGraphemes(value).reverse().join("");
+    const characters = segmentGraphemes(value);
+    const groupedCharacters = [];
+
+    characters.forEach((character) => {
+      if (SPACING_KANA_MARK.test(character) && groupedCharacters.length > 0) {
+        groupedCharacters[groupedCharacters.length - 1] += character;
+        return;
+      }
+      groupedCharacters.push(character);
+    });
+
+    return groupedCharacters.reverse().join("");
   }
 
   function addDakutenOnly(value) {
@@ -125,9 +138,14 @@
     const alreadyVoiced =
       /[がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゔヴヷヸヹヺガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ]/u;
 
-    return segmentGraphemes(value)
-      .map((character) => {
+    const characters = segmentGraphemes(value);
+
+    return characters
+      .map((character, index) => {
+        const hasFollowingKanaMark = SPACING_KANA_MARK.test(characters[index + 1] || "");
         if (
+          SPACING_KANA_MARK.test(character) ||
+          hasFollowingKanaMark ||
           excludedCharacters.test(character) ||
           smallKana.test(character) ||
           !kana.test(character) ||

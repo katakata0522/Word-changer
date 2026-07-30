@@ -13,7 +13,7 @@
   --color-danger: #b42318;
   --color-danger-soft: #fff1f0;
   --color-success: #177245;
-  --color-focus: #f59e0b;
+  --color-focus: #7a4b00;
   --shadow-surface: 0 16px 40px rgba(26, 45, 61, 0.1);
   color-scheme: light;
 }
@@ -235,6 +235,18 @@ textarea:disabled {
 
 textarea:not(:disabled):hover {
   border-color: #93a5b2;
+}
+
+textarea[aria-invalid="true"] {
+  border-color: var(--color-danger);
+  background: #fffafa;
+}
+
+.input-error {
+  margin: 7px 0 0;
+  color: var(--color-danger);
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .input-meta {

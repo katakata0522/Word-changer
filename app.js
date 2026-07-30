@@ -3,12 +3,25 @@
 
   const conversions = globalThis.WordChangerConversions;
   if (!conversions) {
+    const selectionSummary = document.getElementById("selectionSummary");
+    const loadError = document.getElementById("loadError");
+    const loadErrorMessage = document.getElementById("loadErrorMessage");
+    const retryBtn = document.getElementById("retryBtn");
+    const appStatus = document.getElementById("appStatus");
+
+    selectionSummary.textContent = "変換処理を読み込めませんでした。";
+    loadErrorMessage.textContent =
+      "変換処理の読み込みに失敗しました。ページを再読み込みしてください。";
+    loadError.hidden = false;
+    retryBtn.addEventListener("click", () => window.location.reload());
+    appStatus.textContent = "アプリケーションの変換処理を読み込めませんでした。";
     return;
   }
 
   const STORAGE_PREFIX = "jmn_v3_";
   const MAIN_CATEGORY_KEY = `${STORAGE_PREFIX}mainCategory`;
   const SUB_TAB_KEY_PREFIX = `${STORAGE_PREFIX}subTab_`;
+  const CONFIG_LOAD_TIMEOUT_MS = 15000;
   const VALID_CATEGORIES = ["practical", "fun"];
 
   const elements = {
@@ -21,6 +34,7 @@
     copyLabel: document.querySelector("#copyBtn .copy-label"),
     funPanel: document.getElementById("funPanel"),
     funTabsContainer: document.getElementById("funTabsContainer"),
+    inputError: document.getElementById("inputError"),
     inputText: document.getElementById("inputText"),
     loadError: document.getElementById("loadError"),
     loadErrorMessage: document.getElementById("loadErrorMessage"),
@@ -148,21 +162,30 @@
       "ここに変換したい文章を入力";
   }
 
+  function setInputError(message) {
+    const hasError = Boolean(message);
+    elements.inputError.textContent = message;
+    elements.inputError.hidden = !hasError;
+    elements.inputText.setAttribute("aria-invalid", String(hasError));
+  }
+
   function updateCharCounter() {
     const graphemes = conversions.segmentGraphemes(elements.inputText.value);
-    if (graphemes.length > conversions.MAX_INPUT_GRAPHEMES) {
-      elements.inputText.value = graphemes
-        .slice(0, conversions.MAX_INPUT_GRAPHEMES)
-        .join("");
-    }
-
-    const currentLength = Math.min(graphemes.length, conversions.MAX_INPUT_GRAPHEMES);
+    const currentLength = graphemes.length;
+    const overLimit = currentLength > conversions.MAX_INPUT_GRAPHEMES;
     elements.charCounter.textContent =
       `${currentLength} / ${conversions.MAX_INPUT_GRAPHEMES}文字`;
     elements.charCounter.classList.toggle(
       "is-near-limit",
       currentLength >= conversions.MAX_INPUT_GRAPHEMES * 0.9
     );
+    setInputError(
+      overLimit
+        ? `入力が上限を${currentLength - conversions.MAX_INPUT_GRAPHEMES}文字超えています。文章は削除されていません。上限以内に収めてください。`
+        : ""
+    );
+
+    return { currentLength, overLimit };
   }
 
   function setActiveSubTab(category, tabId, options = {}) {
@@ -271,7 +294,11 @@
     elements.resultText.classList.toggle("is-error", Boolean(options.error));
     elements.resultArea.hidden = false;
     elements.copyBtn.hidden = Boolean(options.error || options.empty);
-    elements.resultArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    elements.resultArea.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "nearest"
+    });
   }
 
   function convertInput() {
@@ -279,10 +306,19 @@
       return;
     }
 
+    const { overLimit } = updateCharCounter();
+    if (overLimit) {
+      resetResult();
+      announce("入力文字数が上限を超えています。文章は削除されていません。");
+      elements.inputText.focus();
+      return;
+    }
+
     const input = elements.inputText.value;
     if (input.length === 0) {
-      showResult("変換したい文章を入力してください。", { error: true });
-      announce("入力内容がありません。");
+      resetResult();
+      setInputError("変換したい文章を入力してください。");
+      announce("変換したい文章を入力してください。");
       elements.inputText.focus();
       return;
     }
@@ -436,8 +472,17 @@
     elements.loadError.hidden = true;
     elements.selectionSummary.textContent = "設定を読み込んでいます。";
 
+    const abortController = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => abortController.abort(),
+      CONFIG_LOAD_TIMEOUT_MS
+    );
+
     try {
-      const response = await fetch("config.json", { cache: "no-cache" });
+      const response = await fetch("config.json", {
+        cache: "no-cache",
+        signal: abortController.signal
+      });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -468,12 +513,20 @@
     } catch (error) {
       console.error("Word-changer initialization failed:", error);
       elements.selectionSummary.textContent = "設定を読み込めませんでした。";
-      elements.loadErrorMessage.textContent =
-        location.protocol === "file:"
-          ? "ローカルファイルを直接開くと設定を取得できません。簡易Webサーバー経由で開いてください。"
-          : "設定ファイルを読み込めませんでした。通信状態を確認して、もう一度お試しください。";
+      if (location.protocol === "file:") {
+        elements.loadErrorMessage.textContent =
+          "ローカルファイルを直接開くと設定を取得できません。簡易Webサーバー経由で開いてください。";
+      } else if (error?.name === "AbortError") {
+        elements.loadErrorMessage.textContent =
+          "設定ファイルの読み込みがタイムアウトしました。通信状態を確認して、もう一度お試しください。";
+      } else {
+        elements.loadErrorMessage.textContent =
+          "設定ファイルを読み込めませんでした。通信状態を確認して、もう一度お試しください。";
+      }
       elements.loadError.hidden = false;
       announce("アプリケーションの設定を読み込めませんでした。");
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }
 

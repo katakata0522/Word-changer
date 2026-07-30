@@ -15,7 +15,10 @@ const requiredFiles = [
   "conversions.js",
   "app.js",
   "config.json",
-  "README.md"
+  "README.md",
+  "package.json",
+  "package-lock.json",
+  "tests/app.test.cjs"
 ];
 
 requiredFiles.forEach((file) => {
@@ -26,6 +29,9 @@ assert.match(index, /<h1>実用ネタ文字変換<\/h1>/);
 assert.match(index, /<label for="inputText"/);
 assert.match(index, /role="status"/);
 assert.match(index, /role="tablist"/);
+assert.match(index, /id="inputError"/);
+assert.match(index, /aria-invalid="false"/);
+assert.match(index, /<noscript>/);
 assert.match(index, /meta name="description"/);
 assert.match(index, /href="style\.css"/);
 assert.match(index, /src="conversions\.js"/);
