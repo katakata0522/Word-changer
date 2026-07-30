@@ -35,10 +35,26 @@ test("絵文字をランダム変換しても一文字分として扱う", () =>
 
 test("ランダム変換は空白と改行を維持する", () => {
   assert.equal(conversions.randomConvert("A B\nC", ["★"]), "★ ★\n★");
+  assert.equal(conversions.randomConvert("A\r\nB", ["★"]), "★\r\n★");
 });
 
 test("分解された濁点を重複させない", () => {
   assert.equal(conversions.addDakutenOnly(`か\u3099`), "が");
+});
+
+test("間隔用の濁点と半濁点を重複させない", () => {
+  assert.equal(conversions.addDakutenOnly("か゛"), "か゛");
+  assert.equal(conversions.addDakutenOnly("か゜"), "か゜");
+  assert.equal(conversions.addDakutenOnly("カ゛"), "カ゛");
+  assert.equal(conversions.addDakutenOnly("カ゜"), "カ゜");
+  assert.equal(
+    conversions.addDakutenOnly(conversions.addDakutenOnly("か")),
+    "か゛"
+  );
+});
+
+test("間隔用の濁点を基底文字とまとめて反転する", () => {
+  assert.equal(conversions.reverseString("Aか゛B"), "Bか゛A");
 });
 
 test("ひらがなを半角カナへ変換する", () => {

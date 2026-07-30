@@ -44,9 +44,10 @@ python -m http.server 8000
 
 ## テスト
 
-Node.js 20以上を使用します。追加パッケージのインストールは不要です。
+Node.js 20.19以上を使用します。初回はテスト用パッケージをインストールしてください。
 
 ```bash
+npm ci
 npm run check
 ```
 
@@ -55,8 +56,10 @@ npm run check
 - JavaScriptの構文
 - 絵文字・結合文字を含むUnicode変換
 - カナ・英数字・空白の変換
+- 入力上限、設定エラー、コピー、キーボード操作などの画面状態
 - `config.json`と変換処理の対応
 - HTMLの主要なアクセシビリティ要素
+- HTML構文
 - 不要なランダム記号の混入
 
 Pull RequestではGitHub Actionsでも同じチェックを実行します。
@@ -75,6 +78,7 @@ Pull RequestではGitHub Actionsでも同じチェックを実行します。
 
 - 現行のChrome、Edge、Firefox、Safariを想定しています。
 - 書記素分割には`Intl.Segmenter`を優先して使用し、未対応環境ではUnicodeコードポイント単位へフォールバックします。
+- 入力上限は2000文字です。超過した文章は削除せず、上限以内に収まるまで変換を停止します。
 - 半角に同じ小書き文字が存在しない「ヮ・ヵ・ヶ」などは、通常サイズの「ﾜ・ｶ・ｹ」へ近似変換します。
 - コピーAPIが利用できない場合は、従来方式でのコピーを試みます。
 
@@ -87,8 +91,11 @@ Pull RequestではGitHub Actionsでも同じチェックを実行します。
 ├── conversions.js
 ├── app.js
 ├── config.json
+├── package.json
+├── package-lock.json
 ├── tests/
 │   ├── conversions.test.cjs
+│   ├── app.test.cjs
 │   └── static-check.cjs
 └── .github/workflows/quality.yml
 ```

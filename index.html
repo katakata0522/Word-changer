@@ -23,6 +23,11 @@
 
   <main class="app-shell" aria-labelledby="converter-heading">
     <h2 id="converter-heading" class="visually-hidden">文字変換ツール</h2>
+    <noscript>
+      <div class="load-error">
+        <p>このツールを使用するには、ブラウザのJavaScriptを有効にしてください。</p>
+      </div>
+    </noscript>
 
     <section class="step method-step" aria-labelledby="method-heading">
       <div class="step-heading">
@@ -99,9 +104,11 @@
         id="inputText"
         rows="6"
         placeholder="設定を読み込んでいます"
-        aria-describedby="inputHelp charCounter"
+        aria-describedby="inputHelp charCounter inputError"
+        aria-invalid="false"
         disabled
       ></textarea>
+      <p id="inputError" class="input-error" hidden></p>
       <div class="input-meta">
         <div class="input-actions">
           <button id="clearAllBtn" class="text-action danger-action" type="button" disabled>
