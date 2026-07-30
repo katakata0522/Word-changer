@@ -2,662 +2,146 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>実用ネタ文字変換</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background: #f0f4f8; 
-      color: #333;
-      font-family: 'Noto Sans JP', 'Meiryo', sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .container {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      background: #fff;
-      border-radius: 18px; 
-      box-shadow: 0 8px 25px rgba(0,0,0,0.08); 
-      padding: 1.5em 1.2em;
-      width: 98vw;
-      max-width: 550px; 
-      min-width: 300px;
-    }
-    .app-title {
-      font-size: 1.7em; 
-      text-align: center;
-      margin-bottom: 1em;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #2c669c; 
-    }
-
-
-    .main-category-tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1.2em;
-      border-bottom: 2px solid #e0e0e0;
-    }
-    .main-category-tab {
-      padding: 0.6em 1.5em;
-      font-size: 1.1em;
-      font-weight: 600;
-      color: #666;
-      cursor: pointer;
-      border: none;
-      background: none;
-      position: relative;
-      transition: color 0.3s;
-    }
-    .main-category-tab.active {
-      color: #2c669c;
-    }
-    .main-category-tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; 
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #2c669c;
-    }
-
-
-    .conversion-tabs-panel {
-      display: none; 
-    }
-    .conversion-tabs-panel.active {
-      display: block;
-    }
-    .conversion-tabs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 1em;
-    }
-    .sub-tab {
-      padding: 0.5em 0.3em; 
-      border-radius: 8px;
-      background: #e9f1f8; 
-      color: #334e68; 
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid #cddbea; 
-      outline: none;
-      font-size: 0.88em; 
-      text-align: center;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-      min-height: 40px; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .sub-tab.active {
-      background: #3b82f6; 
-      color: #fff;
-      font-weight: bold;
-      border-color: #3b82f6;
-    }
-
-
-    .input-area {
-      width: 100%;
-      margin-bottom: 1em;
-      position: relative;
-    }
-    textarea {
-      width: 100%;
-      min-height: 100px;
-      font-size: 1.05em;
-      padding: 0.7em;
-      border-radius: 10px; 
-      border: 1.5px solid #c5d9e8; 
-      resize: vertical;
-      margin-bottom: 0.3em;
-      box-sizing: border-box;
-      background: #f9fbfd; 
-      padding-right: 30px;
-    }
-    .input-clear-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 1.5em;
-      color: #aaa;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-    }
-    .input-clear-btn:hover { color: #777; }
-    .input-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: -0.5em;
-      padding: 0 5px;
-    }
-    .clear-all-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      background: none;
-      border: none;
-      color: #9ca3af; /* 少し薄めのグレー */
-      padding: 0.2em 0.6em;
-      border-radius: 8px;
-      font-size: 0.85em;
-      cursor: pointer;
-      transition: background-color 0.2s, color 0.2s;
-    }
-    .clear-all-btn:hover {
-      background-color: #f3f4f6; /* 薄いグレーの背景 */
-      color: #374151; /* 少し濃いめのグレー */
-    }
-    .clear-all-btn .clear-icon {
-      width: 1.1em;
-      height: 1.1em;
-    }
-    .char-counter {
-      font-size: 0.8em;
-      color: #777;
-      text-align: right;
-    }
-    .convert-btn {
-      display: block;
-      margin: 0.5em auto 1em auto; 
-      background: #3b82f6; 
-      color: #fff;
-      border: none;
-      padding: 0.7em 2em;
-      border-radius: 30px;
-      font-size: 1.05em;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3); 
-      transition: background 0.2s;
-    }
-    .convert-btn:hover { background: #2563eb; } 
-
-
-    .result-area {
-      background: #f9fbfd;
-      border-radius: 10px;
-      padding: 1em;
-      margin-bottom: 0.7em;
-      min-height: 50px;
-      font-size: 1.1em;
-      word-break: break-all;
-      border: 1.5px solid #c5d9e8;
-      position: relative;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-    #resultText { width: 100%; text-align: left; }
-    .copy-btn {
-      margin: 1em auto 0.2em auto;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      background: #fff;
-      color: #3b82f6;
-      border: 1px solid #3b82f6;
-      border-radius: 9px;
-      font-size: 0.95em;
-      padding: 0.4em 1em;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.2s, color 0.2s;
-    }
-    .copy-btn:active { background: #e0e7ff; } 
-    .copy-btn .icon { font-size: 1.1em; }
-
-
-    .footer {
-      text-align: center;
-      margin-top: 2em;
-      font-size: 0.9em;
-      color: #666; 
-      opacity: 0.9;
-      letter-spacing: 0.5px;
-      line-height: 1.5;
-    }
-    @media (max-width: 600px) { 
-      .container { max-width: 98vw; padding: 1em 3vw;}
-      .app-title { font-size: 1.5em;}
-      .main-category-tab { font-size: 1em; padding: 0.6em 1em;}
-      .sub-tab { font-size: 0.85em; min-height: 36px; }
-      .conversion-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); } 
-      textarea { font-size: 1em; }
-      .convert-btn { font-size: 1em; }
-      .result-area { font-size: 1em; }
-    }
-     @media (max-width: 400px) {
-      .conversion-tabs-grid { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); }
-      .sub-tab { font-size: 0.8em; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="英字・カナ・空白の実用変換と、文字順の反転やランダム文字などのネタ変換をブラウザ内で行える無料ツールです。入力内容は外部へ送信しません。">
+  <meta name="theme-color" content="#1f4e79">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="実用ネタ文字変換">
+  <meta property="og:description" content="文章を入力し、実用変換やネタ変換をブラウザ内ですぐに試せます。">
+  <title>実用ネタ文字変換｜Word-changer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="conversions.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <div class="app-title">実用ネタ文字変換</div>
+  <header class="site-header">
+    <p class="eyebrow">WORD-CHANGER</p>
+    <h1>実用ネタ文字変換</h1>
+    <p class="lead">変換方法を選び、文章を入力するだけ。処理はすべてこのブラウザ内で完結します。</p>
+  </header>
 
+  <main class="app-shell" aria-labelledby="converter-heading">
+    <h2 id="converter-heading" class="visually-hidden">文字変換ツール</h2>
 
-    <div class="main-category-tabs">
-      <button class="main-category-tab active" data-category="practical">実用</button>
-      <button class="main-category-tab" data-category="fun">ネタ</button>
-    </div>
-
-
-    <div id="practicalPanel" class="conversion-tabs-panel active">
-      <div class="conversion-tabs-grid" id="practicalTabsContainer">
-        <!-- 実用タブはJSで生成 -->
+    <section class="step method-step" aria-labelledby="method-heading">
+      <div class="step-heading">
+        <span class="step-number" aria-hidden="true">1</span>
+        <h3 id="method-heading">変換方法を選ぶ</h3>
       </div>
-    </div>
-    <div id="funPanel" class="conversion-tabs-panel">
-      <div class="conversion-tabs-grid" id="funTabsContainer">
-        <!-- ネタタブはJSで生成 -->
+
+      <div class="main-category-tabs" role="tablist" aria-label="変換カテゴリ">
+        <button
+          id="practicalTab"
+          class="main-category-tab is-active"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="practicalPanel"
+          data-category="practical"
+          disabled
+        >実用</button>
+        <button
+          id="funTab"
+          class="main-category-tab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="funPanel"
+          data-category="fun"
+          disabled
+        >ネタ</button>
       </div>
-    </div>
 
-
-    <div class="input-area">
-      <textarea id="inputText" maxlength="2000" placeholder="ここに変換したい文章を入力"></textarea>
-      <div class="input-footer">
-                <button id="clearAllBtn" class="clear-all-btn" title="全消し">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="clear-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.578 0c-1.553 0-3.036.135-4.484.402" />
-          </svg>
-          <span>全消し</span>
-        </button>
-        <div id="charCounter" class="char-counter">0 / 2000</div>
+      <div
+        id="practicalPanel"
+        class="conversion-panel"
+        role="tabpanel"
+        aria-labelledby="practicalTab"
+      >
+        <div
+          id="practicalTabsContainer"
+          class="conversion-grid"
+          role="radiogroup"
+          aria-label="実用変換の種類"
+        ></div>
       </div>
-    </div>
 
+      <div
+        id="funPanel"
+        class="conversion-panel"
+        role="tabpanel"
+        aria-labelledby="funTab"
+        hidden
+      >
+        <p class="fun-notice" role="note">
+          実在する文字を使った変換も、翻訳ではなく意味のないランダム文字列です。
+        </p>
+        <div
+          id="funTabsContainer"
+          class="conversion-grid"
+          role="radiogroup"
+          aria-label="ネタ変換の種類"
+        ></div>
+      </div>
 
-    <button class="convert-btn" id="convertBtn">変換する</button>
+      <p id="selectionSummary" class="selection-summary" aria-live="polite">設定を読み込んでいます。</p>
+    </section>
 
+    <section class="step input-step" aria-labelledby="input-heading">
+      <div class="step-heading">
+        <span class="step-number" aria-hidden="true">2</span>
+        <h3 id="input-heading">文章を入力する</h3>
+      </div>
 
-    <div class="result-area" id="resultArea">
-      <span id="resultText"></span>
-      <button class="copy-btn" id="copyBtn" style="display:none;">
-        <span class="icon">📋</span><span class="text">コピー</span>
+      <label for="inputText" class="field-label">変換したい文章</label>
+      <textarea
+        id="inputText"
+        rows="6"
+        placeholder="設定を読み込んでいます"
+        aria-describedby="inputHelp charCounter"
+        disabled
+      ></textarea>
+      <div class="input-meta">
+        <div class="input-actions">
+          <button id="clearAllBtn" class="text-action danger-action" type="button" disabled>
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="action-icon">
+              <path d="M9 3h6m-9 4h12m-1 0-.7 13H7.7L7 7m3 3v7m4-7v7" />
+            </svg>
+            全消し
+          </button>
+          <button id="undoClearBtn" class="text-action" type="button" hidden>元に戻す</button>
+        </div>
+        <span id="charCounter" class="char-counter">0 / 2000文字</span>
+      </div>
+      <p id="inputHelp" class="input-help">Ctrl＋Enter（Macは⌘＋Enter）でも変換できます。</p>
+
+      <button id="convertBtn" class="primary-action" type="button" disabled>変換する</button>
+    </section>
+
+    <section id="resultArea" class="step result-step" aria-labelledby="result-heading" hidden>
+      <div class="step-heading">
+        <span class="step-number" aria-hidden="true">3</span>
+        <h3 id="result-heading">変換結果</h3>
+      </div>
+      <output id="resultText" class="result-text" for="inputText"></output>
+      <button id="copyBtn" class="copy-action" type="button" hidden>
+        <span class="copy-icon" aria-hidden="true">📋</span>
+        <span class="copy-label">結果をコピー</span>
       </button>
+    </section>
+
+    <div id="loadError" class="load-error" role="alert" hidden>
+      <p id="loadErrorMessage"></p>
+      <button id="retryBtn" class="secondary-action" type="button">もう一度読み込む</button>
     </div>
-  </div>
 
+    <p id="appStatus" class="visually-hidden" role="status" aria-live="polite"></p>
+  </main>
 
-  <div class="footer">
-    © 2025 かたかた All rights reserved.<br>
-    ※このサイトは翻訳機ではありません。<br>ネタ変換で変換された言葉はランダムな文字であり、意味を成しているわけではありません。
-  </div>
-
-
-<script>
-  // --- Global Config Variables ---
-  let tabDefinitions = {};
-  let funnySymbols = {};
-  let placeholderTexts = {};
-  let conversionStrategies = {}; // Will be populated after config loads
-
-  // --- Constants ---
-  const APP_VERSION_PREFIX = 'jmn_v2_'; // アプリバージョンプレフィックス
-  const LOCAL_STORAGE_MAIN_CATEGORY_KEY = `${APP_VERSION_PREFIX}mainCategory`;
-  const LOCAL_STORAGE_SUB_TAB_KEY_PREFIX = `${APP_VERSION_PREFIX}subTab_`; // 後ろにカテゴリ名を付加
-
-  // --- DOM Elements (Cached) ---
-  const inputText = document.getElementById('inputText');
-  const resultText = document.getElementById('resultText');
-  const resultArea = document.getElementById('resultArea');
-  const copyBtn = document.getElementById('copyBtn');
-  const copyBtnText = copyBtn.querySelector('.text');
-  const copyBtnIcon = copyBtn.querySelector('.icon');
-  const convertBtn = document.getElementById('convertBtn');
-  const clearAllBtn = document.getElementById('clearAllBtn');
-  const charCounter = document.getElementById('charCounter');
-  const mainCategoryTabs = document.querySelectorAll('.main-category-tab');
-  const practicalPanel = document.getElementById('practicalPanel');
-  const funPanel = document.getElementById('funPanel');
-  const practicalTabsContainer = document.getElementById('practicalTabsContainer');
-  const funTabsContainer = document.getElementById('funTabsContainer');
-
-  // --- State ---
-  let currentMainCategory = 'practical'; // Default main category
-  let currentSubTab = '';             // Active sub-tab ID
-
-  // --- Conversion Character Maps (Refactored) ---
-  const KANA_MAP_HIRA_TO_HALF = {
-    'あ':'ｱ', 'い':'ｲ', 'う':'ｳ', 'え':'ｴ', 'お':'ｵ', 'か':'ｶ', 'き':'ｷ', 'く':'ｸ', 'け':'ｹ', 'こ':'ｺ',
-    'さ':'ｻ', 'し':'ｼ', 'す':'ｽ', 'せ':'ｾ', 'そ':'ｿ', 'た':'ﾀ', 'ち':'ﾁ', 'つ':'ﾂ', 'て':'ﾃ', 'と':'ﾄ',
-    'な':'ﾅ', 'に':'ﾆ', 'ぬ':'ﾇ', 'ね':'ﾈ', 'の':'ﾉ', 'は':'ﾊ', 'ひ':'ﾋ', 'ふ':'ﾌ', 'へ':'ﾍ', 'ほ':'ﾎ',
-    'ま':'ﾏ', 'み':'ﾐ', 'む':'ﾑ', 'め':'ﾒ', 'も':'ﾓ', 'や':'ﾔ', 'ゆ':'ﾕ', 'よ':'ﾖ', 'ら':'ﾗ', 'り':'ﾘ',
-    'る':'ﾙ', 'れ':'ﾚ', 'ろ':'ﾛ', 'わ':'ﾜ', 'を':'ｦ', 'ん':'ﾝ', 'が':'ｶﾞ', 'ぎ':'ｷﾞ', 'ぐ':'ｸﾞ', 'げ':'ｹﾞ',
-    'ご':'ｺﾞ', 'ざ':'ｻﾞ', 'じ':'ｼﾞ', 'ず':'ｽﾞ', 'ぜ':'ｾﾞ', 'ぞ':'ｿﾞ', 'だ':'ﾀﾞ', 'ぢ':'ﾁﾞ', 'づ':'ﾂﾞ',
-    'で':'ﾃﾞ', 'ど':'ﾄﾞ', 'ば':'ﾊﾞ', 'び':'ﾋﾞ', 'ぶ':'ﾌﾞ', 'べ':'ﾍﾞ', 'ぼ':'ﾎﾞ', 'ぱ':'ﾊﾟ', 'ぴ':'ﾋﾟ',
-    'ぷ':'ﾌﾟ', 'ぺ':'ﾍﾟ', 'ぽ':'ﾎﾟ', 'ぁ':'ｧ', 'ぃ':'ｨ', 'ぅ':'ｩ', 'ぇ':'ｪ', 'ぉ':'ｫ', 'っ':'ｯ', 'ゃ':'ｬ',
-    'ゅ':'ｭ', 'ょ':'ｮ', 'ゎ':'ヮ', 'ゔ':'ｳﾞ', 'ー':'ｰ', '、':'､', '。':'｡'
-  };
-  const KANA_MAP_FULL_TO_HALF = {
-    'ガ':'ｶﾞ', 'ギ':'ｷﾞ', 'グ':'ｸﾞ', 'ゲ':'ｹﾞ', 'ゴ':'ｺﾞ', 'ザ':'ｻﾞ', 'ジ':'ｼﾞ', 'ズ':'ｽﾞ', 'ゼ':'ｾﾞ', 'ゾ':'ｿﾞ',
-    'ダ':'ﾀﾞ', 'ヂ':'ﾁﾞ', 'ヅ':'ﾂﾞ', 'デ':'ﾃﾞ', 'ド':'ﾄﾞ', 'バ':'ﾊﾞ', 'ビ':'ﾋﾞ', 'ブ':'ﾌﾞ', 'ベ':'ﾍﾞ', 'ボ':'ﾎﾞ',
-    'パ':'ﾊﾟ', 'ピ':'ﾋﾟ', 'プ':'ﾌﾟ', 'ペ':'ﾍﾟ', 'ポ':'ﾎﾟ', 'ヴ':'ｳﾞ', 'ヷ':'ﾜﾞ', 'ヺ':'ｦﾞ', 'ア':'ｱ', 'イ':'ｲ',
-    'ウ':'ｳ', 'エ':'ｴ', 'オ':'ｵ', 'カ':'ｶ', 'キ':'ｷ', 'ク':'ｸ', 'ケ':'ｹ', 'コ':'ｺ', 'サ':'ｻ', 'シ':'ｼ', 'ス':'ｽ',
-    'セ':'ｾ', 'ソ':'ｿ', 'タ':'ﾀ', 'チ':'ﾁ', 'ツ':'ﾂ', 'テ':'ﾃ', 'ト':'ﾄ', 'ナ':'ﾅ', 'ニ':'ﾆ', 'ヌ':'ﾇ', 'ネ':'ﾈ',
-    'ノ':'ﾉ', 'ハ':'ﾊ', 'ヒ':'ﾋ', 'フ':'ﾌ', 'ヘ':'ﾍ', 'ホ':'ﾎ', 'マ':'ﾏ', 'ミ':'ﾐ', 'ム':'ﾑ', 'メ':'ﾒ', 'モ':'ﾓ',
-    'ヤ':'ﾔ', 'ユ':'ﾕ', 'ヨ':'ﾖ', 'ラ':'ﾗ', 'リ':'ﾘ', 'ル':'ﾙ', 'レ':'ﾚ', 'ロ':'ﾛ', 'ワ':'ﾜ', 'ヲ':'ｦ', 'ン':'ﾝ',
-    'ァ':'ｧ', 'ィ':'ｨ', 'ゥ':'ｩ', 'ェ':'ｪ', 'ォ':'ｫ', 'ッ':'ｯ', 'ャ':'ｬ', 'ュ':'ｭ', 'ョ':'ｮ', '。':'｡', '、':'､',
-    'ー':'ｰ', '「':'｢', '」':'｣', '・':'･'
-  };
-  const KANA_MAP_HALF_TO_FULL = {
-    'ｶﾞ':'ガ', 'ｷﾞ':'ギ', 'ｸﾞ':'グ', 'ｹﾞ':'ゲ', 'ｺﾞ':'ゴ', 'ｻﾞ':'ザ', 'ｼﾞ':'ジ', 'ｽﾞ':'ズ', 'ｾﾞ':'ゼ', 'ｿﾞ':'ゾ',
-    'ﾀﾞ':'ダ', 'ﾁﾞ':'ヂ', 'ﾂﾞ':'ヅ', 'ﾃﾞ':'デ', 'ﾄﾞ':'ド', 'ﾊﾞ':'バ', 'ﾋﾞ':'ビ', 'ﾌﾞ':'ブ', 'ﾍﾞ':'ベ', 'ﾎﾞ':'ボ',
-    'ﾊﾟ':'パ', 'ﾋﾟ':'ピ', 'ﾌﾟ':'プ', 'ﾍﾟ':'ペ', 'ﾎﾟ':'ポ', 'ｳﾞ':'ヴ', 'ﾜﾞ':'ヷ', 'ｦﾞ':'ヺ', 'ｱ':'ア', 'ｲ':'イ',
-    'ｳ':'ウ', 'ｴ':'エ', 'ｵ':'オ', 'ｶ':'カ', 'ｷ':'キ', 'ｸ':'ク', 'ｹ':'ケ', 'ｺ':'コ', 'ｻ':'サ', 'ｼ':'シ', 'ｽ':'ス',
-    'ｾ':'セ', 'ｿ':'ソ', 'ﾀ':'タ', 'ﾁ':'チ', 'ﾂ':'ツ', 'ﾃ':'テ', 'ﾄ':'ト', 'ﾅ':'ナ', 'ﾆ':'ニ', 'ﾇ':'ヌ', 'ﾈ':'ネ',
-    'ﾉ':'ノ', 'ﾊ':'ハ', 'ﾋ':'ヒ', 'ﾌ':'フ', 'ﾍ':'ヘ', 'ﾎ':'ホ', 'ﾏ':'マ', 'ﾐ':'ミ', 'ﾑ':'ム', 'ﾒ':'メ', 'ﾓ':'モ',
-    'ﾔ':'ヤ', 'ﾕ':'ユ', 'ﾖ':'ヨ', 'ﾗ':'ラ', 'ﾘ':'リ', 'ﾙ':'ル', 'ﾚ':'レ', 'ﾛ':'ロ', 'ﾜ':'ワ', 'ｦ':'ヲ', 'ﾝ':'ン',
-    'ｧ':'ァ', 'ｨ':'ィ', 'ｩ':'ゥ', 'ｪ':'ェ', 'ｫ':'ォ', 'ｯ':'ッ', 'ｬ':'ャ', 'ｭ':'ュ', 'ｮ':'ョ', '｡':'。', '､':'、',
-    'ｰ':'ー', '｢':'「', '｣':'」', '･':'・'
-  };
-
-  // --- Conversion Functions ---
-  function hiraToHalfKatakana(str) {
-    return str.split('').map(char => KANA_MAP_HIRA_TO_HALF[char] || char).join('');
-  }
-
-  function toHalfWidthAlphaNum(str) {
-    return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-  }
-
-  function toFullWidthAlphaNum(str) {
-    return str.replace(/[A-Za-z0-9]/g, s => String.fromCharCode(s.charCodeAt(0) + 0xFEE0));
-  }
-  
-  function toHalfWidthKatakana(str) {
-    let halfwidth = '';
-    for (let i = 0; i < str.length; i++) {
-      const char = str[i];
-      halfwidth += KANA_MAP_FULL_TO_HALF[char] || char;
-    }
-    return halfwidth;
-  }
-
-  function toFullWidthKatakana(str) {
-    let fullwidth = '';
-    for (let i = 0; i < str.length; i++) {
-      const char = str[i];
-      const nextChar = (i + 1 < str.length) ? str[i+1] : '';
-      if (nextChar && (nextChar === 'ﾞ' || nextChar === 'ﾟ')) {
-        const combined = char + nextChar;
-        if (KANA_MAP_HALF_TO_FULL[combined]) {
-          fullwidth += KANA_MAP_HALF_TO_FULL[combined];
-          i++;
-          continue;
-        }
-      }
-      fullwidth += KANA_MAP_HALF_TO_FULL[char] || char;
-    }
-    return fullwidth;
-  }
-
-  function removeAllSpaces(str) {
-    return str.replace(/\s/g, '');
-  }
-
-  function randomConvert(str, symbolList) {
-    if (!symbolList || symbolList.length === 0) return str;
-    return str.split('').map(ch => {
-      if (/\s/.test(ch)) return ch;
-      return symbolList[Math.floor(Math.random() * symbolList.length)];
-    }).join('');
-  }
-
-  function reverseString(str) {
-    return str.split('').reverse().join('');
-  }
-
-  function addDakutenOnly(str) {
-    const NO_DAKUTEN_CHARS_REGEX = /[\s、。「」！？()（）ヶヵヴンん]/;
-    const SMALL_KANA_REGEX = /[ぁぃぅぇぉゃゅょゎっァィゥェォャュョヮッ]/;
-    const KANA_REGEX = /[\u3040-\u309F\u30A0-\u30FF]/;
-    const ALREADY_DAKUTEN_REGEX = /[がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴヷヺガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ]/;
-
-    let result = '';
-    for (let i = 0; i < str.length; i++) {
-      const ch = str[i];
-      const nextChar = str[i + 1];
-      if (NO_DAKUTEN_CHARS_REGEX.test(ch) ||
-          SMALL_KANA_REGEX.test(ch) ||
-          !KANA_REGEX.test(ch) ||
-          ALREADY_DAKUTEN_REGEX.test(ch) ||
-          nextChar === '゛' || nextChar === '゜') {
-        result += ch;
-        continue;
-      }
-      result += ch + '゛';
-    }
-    return result;
-  }
-
-  function emphasizedStatementConversion(str) {
-    if (str === null || str === undefined) {
-      return '';
-    }
-    return str.split('').join(' ');
-  }
-
-  // --- UI Update Functions ---
-  function updatePlaceholder() {
-    inputText.placeholder = (placeholderTexts && placeholderTexts[currentSubTab]) || (placeholderTexts && placeholderTexts.default) || 'ここに変換したい文章を入力';
-  }
-
-  function updateCharCounter() {
-    const currentLength = inputText.value.length;
-    const maxLength = inputText.maxLength;
-    charCounter.textContent = `${currentLength} / ${maxLength}`;
-  }
-
-  function resetResultArea() {
-    resultArea.style.display = 'none';
-    resultText.textContent = '';
-    copyBtn.style.display = 'none';
-  }
-
-  // --- Tab Handling ---
-  function createSubTabs(category, container) {
-    container.innerHTML = '';
-    if (!tabDefinitions[category]) return;
-    tabDefinitions[category].forEach(tabDef => {
-      const button = document.createElement('button');
-      button.classList.add('sub-tab');
-      button.setAttribute('data-tab-id', tabDef.id);
-      button.textContent = tabDef.label;
-      button.addEventListener('click', () => {
-        setActiveSubTab(category, tabDef.id);
-        resetResultArea();
-      });
-      container.appendChild(button);
-    });
-  }
-
-  function setActiveMainCategory(category) {
-    currentMainCategory = category;
-    mainCategoryTabs.forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.category === category);
-    });
-    practicalPanel.classList.toggle('active', category === 'practical');
-    funPanel.classList.toggle('active', category === 'fun');
-    
-    const savedSubTab = localStorage.getItem(LOCAL_STORAGE_SUB_TAB_KEY_PREFIX + category);
-    const subTabsForCategory = tabDefinitions[category] || [];
-
-    if (savedSubTab && subTabsForCategory.some(t => t.id === savedSubTab)) {
-      setActiveSubTab(category, savedSubTab);
-    } else if (subTabsForCategory.length > 0) {
-      setActiveSubTab(category, subTabsForCategory[0].id);
-    } else {
-      currentSubTab = '';
-      updatePlaceholder();
-    }
-    localStorage.setItem(LOCAL_STORAGE_MAIN_CATEGORY_KEY, category);
-  }
-
-  function setActiveSubTab(category, tabId) {
-    if (currentMainCategory !== category) return;
-    currentSubTab = tabId;
-    const container = (category === 'practical') ? practicalTabsContainer : funTabsContainer;
-    container.querySelectorAll('.sub-tab').forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.tabId === tabId);
-    });
-    updatePlaceholder();
-    localStorage.setItem(LOCAL_STORAGE_SUB_TAB_KEY_PREFIX + category, tabId);
-  }
-
-  // --- Event Listeners ---
-  mainCategoryTabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      setActiveMainCategory(this.dataset.category);
-    });
-  });
-
-  convertBtn.addEventListener('click', () => {
-    const input = inputText.value;
-    if (input.trim() === '' && currentSubTab !== 'spaceRemoveAll') {
-      resultText.textContent = '何か入力してください。';
-      resultArea.style.display = 'flex';
-      copyBtn.style.display = 'none';
-      return;
-    }
-    
-    const selectedConversion = conversionStrategies[currentSubTab];
-    let resultString = '';
-
-    if (selectedConversion) {
-      resultString = selectedConversion(input);
-    } else {
-      resultString = '変換タイプが選択されていません。';
-    }
-
-    resultText.textContent = resultString;
-    resultArea.style.display = 'flex';
-
-    if (resultString !== '何か入力してください。' && resultString !== '変換タイプが選択されていません.') {
-      copyBtn.style.display = 'flex';
-      copyBtnText.textContent = 'コピー';
-      copyBtnIcon.textContent = '📋';
-    } else {
-      copyBtn.style.display = 'none';
-    }
-  });
-
-  copyBtn.addEventListener('click', () => {
-    const textToCopy = resultText.textContent;
-    if (textToCopy === null || typeof textToCopy === 'undefined') return;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => {
-          copyBtnText.textContent = "コピー完了！"; copyBtnIcon.textContent = '✅';
-          setTimeout(() => { copyBtnText.textContent = "コピー"; copyBtnIcon.textContent = '📋'; }, 1500);
-        })
-        .catch(() => fallbackCopyTextToClipboard(textToCopy));
-    } else {
-      fallbackCopyTextToClipboard(textToCopy);
-    }
-  });
-
-  function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.top = "-9999px";
-    textArea.style.left = "-9999px";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      const successful = document.execCommand('copy');
-      if (successful) {
-        copyBtnText.textContent = "コピー完了！"; copyBtnIcon.textContent = '✅';
-      } else {
-        copyBtnText.textContent = "コピー失敗"; copyBtnIcon.textContent = '❌';
-      }
-    } catch (err) {
-      copyBtnText.textContent = "コピー失敗"; copyBtnIcon.textContent = '❌';
-    }
-    document.body.removeChild(textArea);
-    setTimeout(() => {
-      copyBtnText.textContent = "コピー";
-      copyBtnIcon.textContent = '📋';
-    }, 1500);
-  }
-
-  clearAllBtn.addEventListener('click', () => { 
-    inputText.value = '';
-    updateCharCounter();
-    inputText.focus();
-    resetResultArea();
-  });
-
-  inputText.addEventListener('input', updateCharCounter);
-
-  // --- Initialization ---
-  async function initializeApp() {
-    try {
-      const response = await fetch('config.json');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const config = await response.json();
-
-      tabDefinitions = config.tabDefinitions;
-      funnySymbols = config.funnySymbols;
-      placeholderTexts = config.placeholderTexts;
-
-      conversionStrategies = {
-        'upper': (text) => text.toUpperCase(),
-        'lower': (text) => text.toLowerCase(),
-        'hiraToHalfKata': hiraToHalfKatakana,
-        'toHalfAlphaNum': toHalfWidthAlphaNum,
-        'toFullAlphaNum': toFullWidthAlphaNum,
-        'toHalfKata': toHalfWidthKatakana,
-        'toFullKata': toFullWidthKatakana,
-        'spaceRemoveAll': removeAllSpaces,
-        'arabic': (text) => randomConvert(text, funnySymbols.arabic),
-        'korean': (text) => randomConvert(text, funnySymbols.korean),
-        'alien': (text) => randomConvert(text, funnySymbols.alien),
-        'reverse': reverseString,
-        'dakuten': addDakutenOnly,
-        'emphasizedStatement': emphasizedStatementConversion,
-      };
-
-      createSubTabs('practical', practicalTabsContainer);
-      createSubTabs('fun', funTabsContainer);
-
-      const savedMainCategory = localStorage.getItem(LOCAL_STORAGE_MAIN_CATEGORY_KEY);
-      setActiveMainCategory((savedMainCategory === 'practical' || savedMainCategory === 'fun') ? savedMainCategory : 'practical');
-      
-      updateCharCounter();
-    } catch (error) {
-      console.error("Could not load or parse config.json:", error);
-      const container = document.querySelector('.container');
-      if (container) {
-          container.innerHTML = '<p style="color: red; text-align: center;">アプリケーションの読み込みに失敗しました。設定ファイルを確認してください。</p>';
-      }
-    }
-  }
-
-  // Start the application
-  initializeApp();
-</script>
+  <footer class="site-footer">
+    <p>入力した文章は外部へ送信・保存されません。</p>
+    <p>© 2025–2026 かたかた</p>
+  </footer>
 </body>
 </html>
