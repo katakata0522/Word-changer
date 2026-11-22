@@ -4,6 +4,8 @@
   "private": true,
   "description": "ブラウザ内で完結する実用・ネタ文字変換ツール",
   "scripts": {
+    "dev": "node scripts/ai-studio-preview.mjs",
+    "start": "node scripts/ai-studio-preview.mjs",
     "test": "node tests/conversions.test.cjs && node tests/app.test.cjs && node tests/static-check.cjs",
     "check": "node --check conversions.js && node --check app.js && node --check tests/app.test.cjs && npm test && html-validate index.html"
   },
