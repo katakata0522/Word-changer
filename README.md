@@ -103,3 +103,5 @@ Pull RequestではGitHub Actionsでも同じチェックを実行します。
 ## 更新
 
 最終更新: 2026-07-30
+
+AI Studio からの変更は `verified/ai-studio` ブランチに保存します。
